@@ -5,7 +5,6 @@ from flask import abort, flash, session, redirect, request, render_template
 from app import app, db
 from app.models import User
 from app.forms import *
-__all__ = []
 
 
 @app.route('/')
@@ -14,30 +13,30 @@ def index():
 
 
 @app.route('/cart')
-def index():
+def cart():
     return render_template('cart.html')
 
 
 @app.route('/account')
-def index():
+def account():
     return render_template('account.html')
 
 
 @app.route('/auth')
-def index():
+def auth():
     return render_template('auth.html')
 
 
 @app.route('/register')
-def index():
+def register():
     return render_template('register.html')
 
 
 @app.route('/logout')
-def index():
+def logout():
     return render_template('main.html')
 
 
 @app.route('/ordered')
-def index():
+def ordered():
     return render_template('ordered.html')
