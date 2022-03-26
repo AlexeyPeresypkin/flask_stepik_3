@@ -3,7 +3,9 @@ import datetime
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 
+
 db = SQLAlchemy()
+
 
 orders_dishes_association = db.Table(
     'orders_dishes',
@@ -48,11 +50,11 @@ class Dish(db.Model):
     description = db.Column(db.Text, nullable=False)
     picture = db.Column(db.String)
 
-    categories = db.relationship(
-        'Category',
-        secondary=categories_dishes_association,
-        back_populates='dishes'
+    category_id = db.Column(
+        db.Integer,
+        db.ForeignKey('categories.id')
     )
+    category = db.relationship('Category')
     orders = db.relationship(
         'Order',
         secondary=orders_dishes_association,
@@ -66,11 +68,7 @@ class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String, nullable=False)
 
-    dishes = db.relationship(
-        'Dish',
-        secondary=categories_dishes_association,
-        back_populates='categories'
-    )
+    dishes = db.relationship('Dish')
 
 
 class Order(db.Model):
@@ -79,10 +77,10 @@ class Order(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     total_sum = db.Column(db.Integer)
-    status = db.Column()
+    status = db.Column(db.String)
     email = db.Column(db.String(32), nullable=False)
-    phone = db.Column()
-    address = db.Column()
+    phone = db.Column(db.String)
+    address = db.Column(db.String)
 
     dishes = db.relationship(
         'Dish', secondary=orders_dishes_association, back_populates='orders'
