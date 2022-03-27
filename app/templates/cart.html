@@ -4,14 +4,9 @@
 {% block content %}
     <main class="container">
         <h1 class="h3 my-4">Корзина</h1>
-
-        <div class="alert alert-warning" role="alert">Блюдо удалено из
-            корзины
+        <div class="alert alert-warning" {{ alert }} role="alert">
+            Блюдо удалено из корзины
         </div>
-        <div class="alert alert-warning" role="alert">Чтобы сделать заказ – <a
-                href="{{url_for('auth_view')}}">войдите</a> или <a href="{{url_for('register_view')}}">зарегистрируйтесь</a>
-        </div>
-
         <div class="row mt-5">
             <div class="col-4">
                 {% for field, errors in form.errors.items() %}

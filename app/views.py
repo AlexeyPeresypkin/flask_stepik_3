@@ -11,17 +11,19 @@ from app.models import User, Category, Dish, Order
 from app.forms import *
 from app.utils import give_dishes_and_total, write_obj_in_db
 
+pas = 'qwertY123'
+
 
 @app.route('/')
 def index_view():
     categories = Category.query.join(Dish).all()
-    cart, total = session.get('cart', []), 0
-    if cart:
-        dishes, total = give_dishes_and_total(cart)
+    dishes, total = give_dishes_and_total(
+        session.get('cart', [])
+    )
     return render_template(
         'main.html',
         categories=categories,
-        total=total[0],
+        total=total,
         dishes=dishes
     )
 
@@ -29,26 +31,27 @@ def index_view():
 @app.route('/cart', methods=['GET', 'POST'])
 def cart_view():
     form = OrderForm()
-    cart, total = session.get('cart', []), 0
-    if cart:
-        dishes, total = give_dishes_and_total(cart)
+    dishes, total = give_dishes_and_total(
+        session.get('cart', [])
+    )
 
     if request.method == 'POST':
         if not form.validate_on_submit():
             return render_template(
                 'cart.html',
-                total=total[0],
+                total=total,
                 dishes=dishes,
                 form=form
             )
-        if not cart:
+        if not total:
+            flash('Вы ничего не добавили в корзину')
             return redirect(url_for('index_view'))
         write_obj_in_db(form, total, dishes)
         return render_template('ordered.html')
 
     return render_template(
         'cart.html',
-        total=total[0],
+        total=total,
         dishes=dishes,
         form=form
     )
@@ -58,19 +61,58 @@ def cart_view():
 def add_to_cart_view(dish_id):
     dish = Dish.query.get_or_404(dish_id)
     cart = session.get('cart', [])
-    cart.append(dish_id)
-    session['cart'] = cart
+    if dish_id not in cart:
+        cart.append(dish_id)
+        session['cart'] = cart
     return redirect(url_for('cart_view'))
 
 
 @app.route('/account')
 def account_view():
-    return render_template('account.html')
+    if session.get('user'):
+        user_id = session['user']['id']
+        user = User.query.get(user_id)
+        print(user)
+        # Location.query. \
+        #     filter_by(location_name='Cairo'). \
+        #     join(Country). \
+        #     filter_by(country_id=67). \
+        #     first()
+        # orders = Order.query.\
+        #     filter_by(user_id=user_id).\
+        #     select_from(Dish).\
+        #     all()
+        orders = Order.query. \
+            filter_by(user_id=user_id). \
+            all()
+        print(orders)
+        return render_template('account.html')
+    return redirect(url_for('auth_view'))
 
 
-@app.route('/auth')
+@app.route('/auth', methods=['GET', 'POST'])
 def auth_view():
-    return render_template('auth.html')
+    if session.get('user'):
+        return redirect(url_for('index_view'))
+
+    form = LoginForm()
+
+    if request.method == 'POST':
+        if not form.validate_on_submit():
+            return render_template('login.html', form=form)
+
+        user = User.query.filter_by(email=form.email.data).first()
+        if user and user.password_valid(form.password.data):
+            session['user'] = {
+                'id': user.id,
+                'email': user.email,
+                'role': user.role,
+            }
+            return redirect(url_for('account_view'))
+
+        form.email.errors.append('Неверное имя или пароль')
+
+    return render_template('login.html', form=form)
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -95,12 +137,12 @@ def register_view():
 
         flash(
             f'Пользователь: {form.email.data} с паролем: {form.password.data} зарегистрирован')
-        return redirect(url_for('account_view'))
+        return redirect(url_for('auth_view'))
 
     return render_template('register.html', form=form)
 
 
-@app.route('/logout', methods=['POST'])
+@app.route('/logout')
 def logout_view():
     session.pop('user')
     return redirect(url_for('auth_view'))
