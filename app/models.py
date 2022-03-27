@@ -68,7 +68,7 @@ class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String, nullable=False)
 
-    dishes = db.relationship('Dish')
+    dishes = db.relationship('Dish', viewonly=True)
 
 
 class Order(db.Model):
@@ -85,5 +85,5 @@ class Order(db.Model):
     dishes = db.relationship(
         'Dish', secondary=orders_dishes_association, back_populates='orders'
     )
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    user = db.relationship('User')
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), default=None)
+    user = db.relationship('User', viewonly=True)

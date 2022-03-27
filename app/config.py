@@ -26,7 +26,7 @@ class DevelopmentConfig(Config):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     IMAGE_UPLOADS = os.path.join(current_path, 'static', 'image_uploads')
     SESSION_COOKIE_SECURE = False
-    SQLALCHEMY_ECHO = True
+    # SQLALCHEMY_ECHO = True
 
 
 class TestingConfig(Config):

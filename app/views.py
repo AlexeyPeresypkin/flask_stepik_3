@@ -1,3 +1,4 @@
+import datetime
 from functools import wraps
 
 from flask import abort, flash, session, redirect, request, render_template, \
@@ -6,36 +7,49 @@ from sqlalchemy import func
 from sqlalchemy.orm import joinedload
 
 from app import app, db
-from app.models import User, Category, Dish
+from app.models import User, Category, Dish, Order
 from app.forms import *
+from app.utils import give_dishes_and_total, write_obj_in_db
 
 
 @app.route('/')
 def index_view():
     categories = Category.query.join(Dish).all()
-    # dishes = Dish.query.join(Category).all()
-    # print(dishes)
-    # for dish in dishes:
-    #     print(dish.category.title)
-    print(categories)
-    # for category in categories:
-    #     # pass
-    #     print(category.dishes[:3])
-    #     # print(dish.dishes)
-    return render_template('main.html', categories=categories)
-
-
-@app.route('/cart')
-def cart_view():
-    cart = session.get('cart', [])
+    cart, total = session.get('cart', []), 0
     if cart:
-        dishes = Dish.query.filter(Dish.id.in_(cart)).all()
-        total = db.session.query(
-            func.sum(Dish.price)
-                ).filter(Dish.id.in_(cart)
-                ).group_by(Dish.category_id
-                ).first()
-    return render_template('cart.html', total=total[0], dishes=dishes)
+        dishes, total = give_dishes_and_total(cart)
+    return render_template(
+        'main.html',
+        categories=categories,
+        total=total[0],
+        dishes=dishes
+    )
+
+
+@app.route('/cart', methods=['GET', 'POST'])
+def cart_view():
+    form = OrderForm()
+    cart, total = session.get('cart', []), 0
+    if cart:
+        dishes, total = give_dishes_and_total(cart)
+    if request.method == 'POST':
+        if not form.validate_on_submit():
+            return render_template(
+                'cart.html',
+                total=total[0],
+                dishes=dishes,
+                form=form
+            )
+        if not cart:
+            return redirect(url_for('index_view'))
+        write_obj_in_db(form, total, dishes)
+        return render_template('ordered.html')
+    return render_template(
+        'cart.html',
+        total=total[0],
+        dishes=dishes,
+        form=form
+    )
 
 
 @app.route('/addtocart/<int:dish_id>')
@@ -62,9 +76,10 @@ def register_view():
     return render_template('register.html')
 
 
-@app.route('/logout')
+@app.route('/logout', methods=['POST'])
 def logout_view():
-    return render_template('main.html')
+    session.pop('user')
+    return redirect(url_for('auth_view'))
 
 
 @app.route('/ordered')
