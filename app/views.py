@@ -32,6 +32,7 @@ def cart_view():
     cart, total = session.get('cart', []), 0
     if cart:
         dishes, total = give_dishes_and_total(cart)
+
     if request.method == 'POST':
         if not form.validate_on_submit():
             return render_template(
@@ -44,6 +45,7 @@ def cart_view():
             return redirect(url_for('index_view'))
         write_obj_in_db(form, total, dishes)
         return render_template('ordered.html')
+
     return render_template(
         'cart.html',
         total=total[0],
@@ -71,9 +73,31 @@ def auth_view():
     return render_template('auth.html')
 
 
-@app.route('/register')
+@app.route('/register', methods=['GET', 'POST'])
 def register_view():
-    return render_template('register.html')
+    form = RegistrationForm()
+
+    if request.method == 'POST':
+        if not form.validate_on_submit():
+            return render_template('register.html', form=form)
+
+        user = User.query.filter_by(email=form.email.data).first()
+        if user:
+            form.email.errors.append(
+                'Пользователь с такой почтой уже существует')
+            return render_template('register.html', form=form)
+
+        user = User()
+        user.email = form.email.data
+        user.password = form.password.data
+        db.session.add(user)
+        db.session.commit()
+
+        flash(
+            f'Пользователь: {form.email.data} с паролем: {form.password.data} зарегистрирован')
+        return redirect(url_for('account_view'))
+
+    return render_template('register.html', form=form)
 
 
 @app.route('/logout', methods=['POST'])

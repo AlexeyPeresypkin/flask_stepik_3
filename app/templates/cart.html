@@ -16,7 +16,7 @@
             <div class="col-4">
                 {% for field, errors in form.errors.items() %}
                     <div style="padding:4px;color:red;border:1px solid red;"
-                         class="font-weight-bold form-control">
+                         class="form-control">
                         {{ form[field].label }} {{ ', '.join(errors) }}
                     </div>
                 {% endfor %}
