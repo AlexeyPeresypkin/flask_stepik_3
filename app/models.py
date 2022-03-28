@@ -27,7 +27,7 @@ class User(db.Model):
     email = db.Column(db.String(32), nullable=False, unique=True)
     password_hash = db.Column(db.String(128), nullable=False)
     role = db.Column(db.String(32), nullable=False, default='usr')
-    orders = db.relationship('Order')
+    orders = db.relationship('Order', )
 
     @property
     def password(self):

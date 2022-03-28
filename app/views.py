@@ -3,7 +3,7 @@ from functools import wraps
 
 from flask import abort, flash, session, redirect, request, render_template, \
     url_for
-from sqlalchemy import func
+from sqlalchemy import func, select
 from sqlalchemy.orm import joinedload
 
 from app import app, db
@@ -69,31 +69,23 @@ def add_to_cart_view(dish_id):
 
 @app.route('/account')
 def account_view():
+    dishes, total = give_dishes_and_total(
+        session.get('cart', [])
+    )
     if session.get('user'):
         user_id = session['user']['id']
-        user = User.query.get(user_id)
-        print(user)
-        # Location.query. \
-        #     filter_by(location_name='Cairo'). \
-        #     join(Country). \
-        #     filter_by(country_id=67). \
-        #     first()
-        # orders = Order.query.\
-        #     filter_by(user_id=user_id).\
-        #     select_from(Dish).\
-        #     all()
-        orders = Order.query. \
-            filter_by(user_id=user_id). \
-            all()
-        print(orders)
-        return render_template('account.html')
+        user = User.query.get_or_404(user_id)
+        orders = Order.query.filter_by(user_id=user_id).all()
+        for order in orders:
+            print(order.dishes)
+        return render_template('account.html', total=total, dishes=dishes,)
     return redirect(url_for('auth_view'))
 
 
 @app.route('/auth', methods=['GET', 'POST'])
 def auth_view():
     if session.get('user'):
-        return redirect(url_for('index_view'))
+        return redirect(url_for('account_view'))
 
     form = LoginForm()
 

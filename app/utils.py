@@ -11,7 +11,6 @@ def give_dishes_and_total(cart):
     total = db.session.query(
         func.sum(Dish.price))\
         .filter(Dish.id.in_(cart))\
-        .group_by(Dish.category_id)\
         .first()
     return dishes, total[0]
 
@@ -22,7 +21,7 @@ def write_obj_in_db(form, total, dishes):
     else:
         user_id = None
     order_obj = Order(
-        total_sum=total[0],
+        total_sum=total,
         status='Ordered',
         email=form.email.data,
         phone=form.phone.data,
