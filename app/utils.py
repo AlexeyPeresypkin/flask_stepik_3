@@ -1,4 +1,4 @@
-from flask import session
+from flask import session, redirect, url_for
 from sqlalchemy import func
 
 from app.models import Dish, db, Order
@@ -16,10 +16,9 @@ def give_dishes_and_total(cart):
 
 
 def write_obj_in_db(form, total, dishes):
-    if session.get('user'):
-        user_id = session['user']['id']
-    else:
-        user_id = None
+    if not session.get('user'):
+        return redirect(url_for('auth_view'))
+    user_id = session['user']['id']
     order_obj = Order(
         total_sum=total,
         status='Ordered',

@@ -3,6 +3,7 @@ from functools import wraps
 
 from flask import abort, flash, session, redirect, request, render_template, \
     url_for
+
 from sqlalchemy import func, select
 from sqlalchemy.orm import joinedload
 
@@ -10,8 +11,6 @@ from app import app, db
 from app.models import User, Category, Dish, Order
 from app.forms import *
 from app.utils import give_dishes_and_total, write_obj_in_db
-
-pas = 'qwertY123'
 
 
 @app.route('/')
@@ -47,6 +46,7 @@ def cart_view():
             flash('Вы ничего не добавили в корзину')
             return redirect(url_for('index_view'))
         write_obj_in_db(form, total, dishes)
+        session['cart'] = []
         return render_template('ordered.html')
 
     return render_template(
@@ -64,6 +64,17 @@ def add_to_cart_view(dish_id):
     if dish_id not in cart:
         cart.append(dish_id)
         session['cart'] = cart
+    return redirect(url_for('index_view'))
+
+
+@app.route('/delete/<int:dish_id>')
+def delete_from_cart_view(dish_id):
+    dish = Dish.query.get_or_404(dish_id)
+    cart = session.get('cart', [])
+    if dish_id in cart:
+        cart.remove(dish_id)
+        session['cart'] = cart
+        flash('Блюдо удалено из корзины')
     return redirect(url_for('cart_view'))
 
 
@@ -75,10 +86,12 @@ def account_view():
     if session.get('user'):
         user_id = session['user']['id']
         user = User.query.get_or_404(user_id)
-        orders = Order.query.filter_by(user_id=user_id).all()
-        for order in orders:
-            print(order.dishes)
-        return render_template('account.html', total=total, dishes=dishes,)
+        orders = Order.query.filter_by(user_id=user.id).all()
+        return render_template('account.html',
+                               total=total,
+                               dishes=dishes,
+                               orders=orders,
+                               )
     return redirect(url_for('auth_view'))
 
 

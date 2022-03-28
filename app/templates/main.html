@@ -2,6 +2,15 @@
 {% include 'header.html' %}
 {% block content %}
     <main class="container mt-3">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-warning" role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
         <section class="my-5 jumbotron jumbotron-fluid">
             <div class="text-center">
                 <img class="ml-2"
@@ -24,7 +33,7 @@
                                 <div class="card-body">
                                     <h4 class="h5 card-title">{{ dish.title }}</h4>
                                     <p class="card-text">{{ dish.description }}</p>
-                                    <a href="{{url_for('add_to_cart_view', dish_id=dish.id)}}"
+                                    <a href="{{ url_for('add_to_cart_view', dish_id=dish.id) }}"
                                        class="btn btn-danger">В корзину</a>
                                 </div>
                             </div>

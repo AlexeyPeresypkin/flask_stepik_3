@@ -4,9 +4,28 @@
 {% block content %}
     <main class="container">
         <h1 class="h3 my-4">Корзина</h1>
-        <div class="alert alert-warning" {{ alert }} role="alert">
-            Блюдо удалено из корзины
-        </div>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-warning" role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% if not session.get('user') %}
+            <div class="alert alert-warning" role="alert">Чтобы сделать заказ –
+                <a
+                        href="{{ url_for('auth_view') }}">войдите
+                </a> или
+                <a
+                        href="{{ url_for('register_view') }}">зарегистрируйтесь
+                </a>
+            </div>
+        {% endif %}
+
         <div class="row mt-5">
             <div class="col-4">
                 {% for field, errors in form.errors.items() %}
@@ -47,9 +66,11 @@
                         <input type="hidden" value="{{ dishes }}"
                                name="order_cart">
                     </div>
+                    {% if session.get('user') %}
                     <button type="submit" class=" mt-3 mb-5 btn btn-danger">
                         Оформить заказ
                     </button>
+                    {% endif %}
                 </form>
             </div>
             <div class="col-1"></div>
@@ -68,7 +89,11 @@
                             <td></td>
                             <td>1</td>
                             <td>{{ dish.price }}</td>
-                            <td><a class="text-danger" href="#">Удалить</a>
+                            <td>
+                                <a class="text-danger"
+                                   href="{{ url_for('delete_from_cart_view', dish_id=dish.id) }}">
+                                    Удалить
+                                </a>
                             </td>
                         </tr>
                     {% endfor %}
