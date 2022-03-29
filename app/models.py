@@ -1,5 +1,7 @@
 import datetime
 
+from flask_security import Security, SQLAlchemyUserDatastore, \
+    UserMixin, RoleMixin, login_required, current_user
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -19,14 +21,31 @@ categories_dishes_association = db.Table(
     db.Column('dish_id', db.Integer, db.ForeignKey('dishes.id')),
 )
 
+roles_users = db.Table(
+    'roles_users',
+    db.Column('user_id', db.Integer(), db.ForeignKey('users.id')),
+    db.Column('role_id', db.Integer(), db.ForeignKey('role.id'))
+)
 
-class User(db.Model):
+
+class Role(db.Model, RoleMixin):
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(80), unique=True)
+    description = db.Column(db.String(255))
+
+    def __str__(self):
+        return self.name
+
+
+class User(db.Model, UserMixin):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(32), nullable=False, unique=True)
     password_hash = db.Column(db.String(128), nullable=False)
-    role = db.Column(db.String(32), nullable=False, default='usr')
+    active = db.Column(db.Boolean())
+    roles = db.relationship('Role', secondary=roles_users,
+                            backref=db.backref('users', lazy='dynamic'))
     orders = db.relationship('Order', )
 
     @property

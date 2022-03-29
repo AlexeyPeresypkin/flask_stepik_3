@@ -9,8 +9,8 @@ def give_dishes_and_total(cart):
         return [], 0
     dishes = Dish.query.filter(Dish.id.in_(cart)).all()
     total = db.session.query(
-        func.sum(Dish.price))\
-        .filter(Dish.id.in_(cart))\
+        func.sum(Dish.price)) \
+        .filter(Dish.id.in_(cart)) \
         .first()
     return dishes, total[0]
 
@@ -31,3 +31,5 @@ def write_obj_in_db(form, total, dishes):
     for dish in dishes:
         order_obj.dishes.append(dish)
     db.session.commit()
+
+

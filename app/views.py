@@ -1,20 +1,16 @@
-import datetime
-from functools import wraps
-
-from flask import abort, flash, session, redirect, request, render_template, \
+from flask import flash, session, redirect, request, render_template, \
     url_for
 
-from sqlalchemy import func, select
-from sqlalchemy.orm import joinedload
-
-from app import app, db
-from app.models import User, Category, Dish, Order
+from app import app, db, user_datastore
 from app.forms import *
+from app.models import User, Category, Dish, Order, Role
 from app.utils import give_dishes_and_total, write_obj_in_db
 
 
 @app.route('/')
 def index_view():
+    # session.clear()
+    print(session)
     categories = Category.query.join(Dish).all()
     dishes, total = give_dishes_and_total(
         session.get('cart', [])
@@ -86,7 +82,8 @@ def account_view():
     if session.get('user'):
         user_id = session['user']['id']
         user = User.query.get_or_404(user_id)
-        orders = Order.query.filter_by(user_id=user.id).all()
+        orders = Order.query.filter_by(user_id=user.id).\
+            order_by(Order.date.desc()).all()
         return render_template('account.html',
                                total=total,
                                dishes=dishes,
@@ -111,7 +108,6 @@ def auth_view():
             session['user'] = {
                 'id': user.id,
                 'email': user.email,
-                'role': user.role,
             }
             return redirect(url_for('account_view'))
 
@@ -134,10 +130,12 @@ def register_view():
                 'Пользователь с такой почтой уже существует')
             return render_template('register.html', form=form)
 
-        user = User()
-        user.email = form.email.data
-        user.password = form.password.data
-        db.session.add(user)
+        user_role = Role.query.filter_by(name='user').first()
+        user = user_datastore.create_user(
+            email=form.email.data,
+            password=form.password.data,
+            roles=[user_role, ]
+        )
         db.session.commit()
 
         flash(
