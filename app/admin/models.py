@@ -3,7 +3,7 @@ from flask_admin.contrib.sqla import ModelView
 from flask_security import current_user
 
 
-class MyModelView(ModelView):
+class RestrictMixin(ModelView):
     def is_accessible(self):
         return (current_user.is_active and
                 current_user.is_authenticated and
@@ -20,10 +20,10 @@ class MyModelView(ModelView):
                 abort(403)
             else:
                 # login
-                return redirect(url_for('security.login', next=request.url))
+                return redirect(url_for('auth_view', next=request.url))
 
 
-class MyUserView(MyModelView, ModelView):
+class MyUserView(RestrictMixin, ModelView):
     column_exclude_list = ['password_hash']
     column_searchable_list = ['email']
     column_filters = ['roles']
@@ -35,8 +35,22 @@ class MyUserView(MyModelView, ModelView):
     page_size = 50
 
 
-class MyDishView(MyModelView, ModelView):
+class MyDishView(RestrictMixin, ModelView):
     column_searchable_list = ['title']
     column_filters = ['price']
+
+    page_size = 50
+
+
+class MyCategoryView(RestrictMixin, ModelView):
+    column_searchable_list = ['title']
+    column_filters = ['title']
+
+    page_size = 50
+
+
+class MyOrderView(RestrictMixin, ModelView):
+    column_searchable_list = ['address', 'email']
+    column_filters = ['total_sum', 'date', ]
 
     page_size = 50

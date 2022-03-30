@@ -1,13 +1,10 @@
 import datetime
 
-from flask_security import Security, SQLAlchemyUserDatastore, \
-    UserMixin, RoleMixin, login_required, current_user
+from flask_security import UserMixin, RoleMixin
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 
-
 db = SQLAlchemy()
-
 
 orders_dishes_association = db.Table(
     'orders_dishes',

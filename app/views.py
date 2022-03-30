@@ -1,5 +1,6 @@
 from flask import flash, session, redirect, request, render_template, \
     url_for
+from flask_security import logout_user, login_user
 
 from app import app, db, user_datastore
 from app.forms import *
@@ -9,8 +10,6 @@ from app.utils import give_dishes_and_total, write_obj_in_db
 
 @app.route('/')
 def index_view():
-    # session.clear()
-    print(session)
     categories = Category.query.join(Dish).all()
     dishes, total = give_dishes_and_total(
         session.get('cart', [])
@@ -82,7 +81,7 @@ def account_view():
     if session.get('user'):
         user_id = session['user']['id']
         user = User.query.get_or_404(user_id)
-        orders = Order.query.filter_by(user_id=user.id).\
+        orders = Order.query.filter_by(user_id=user.id). \
             order_by(Order.date.desc()).all()
         return render_template('account.html',
                                total=total,
@@ -109,6 +108,7 @@ def auth_view():
                 'id': user.id,
                 'email': user.email,
             }
+            login_user(user, remember=True)
             return redirect(url_for('account_view'))
 
         form.email.errors.append('Неверное имя или пароль')
@@ -139,15 +139,16 @@ def register_view():
         db.session.commit()
 
         flash(
-            f'Пользователь: {form.email.data} с паролем: {form.password.data} зарегистрирован')
+            f'Пользователь: {form.email.data} зарегистрирован')
         return redirect(url_for('auth_view'))
 
     return render_template('register.html', form=form)
 
 
-@app.route('/logout')
+@app.route('/logout-main')
 def logout_view():
     session.pop('user')
+    logout_user()
     return redirect(url_for('auth_view'))
 
 
