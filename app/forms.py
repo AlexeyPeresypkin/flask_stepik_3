@@ -2,7 +2,8 @@ import re
 
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField
-from wtforms.validators import DataRequired, Length, EqualTo, ValidationError, Email
+from wtforms.validators import DataRequired, Length, EqualTo, ValidationError, \
+    Email
 
 required = 'Это обязательное поле'
 
@@ -56,5 +57,8 @@ class ChangePasswordForm(FlaskForm):
 class OrderForm(FlaskForm):
     username = StringField('Имя:', validators=[DataRequired(required)])
     address = StringField('Адрес:', validators=[DataRequired(required)])
-    email = StringField('Почта:', validators=[DataRequired(required), Email('Неверный формат')])
+    email = StringField(
+        'Почта:',
+        validators=[DataRequired(required),Email('Неверный формат')]
+    )
     phone = StringField('Телефон:', validators=[DataRequired(required)])

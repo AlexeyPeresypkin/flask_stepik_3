@@ -1,0 +1,565 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 12.9 (Ubuntu 12.9-0ubuntu0.20.04.1)
+-- Dumped by pg_dump version 12.9 (Ubuntu 12.9-0ubuntu0.20.04.1)
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- Name: alembic_version; Type: TABLE; Schema: public; Owner: flask_stepik_3_usr
+--
+
+CREATE TABLE public.alembic_version (
+    version_num character varying(32) NOT NULL
+);
+
+
+ALTER TABLE public.alembic_version OWNER TO flask_stepik_3_usr;
+
+--
+-- Name: categories; Type: TABLE; Schema: public; Owner: flask_stepik_3_usr
+--
+
+CREATE TABLE public.categories (
+    id integer NOT NULL,
+    title character varying NOT NULL
+);
+
+
+ALTER TABLE public.categories OWNER TO flask_stepik_3_usr;
+
+--
+-- Name: categories_dishes; Type: TABLE; Schema: public; Owner: flask_stepik_3_usr
+--
+
+CREATE TABLE public.categories_dishes (
+    category_id integer,
+    dish_id integer
+);
+
+
+ALTER TABLE public.categories_dishes OWNER TO flask_stepik_3_usr;
+
+--
+-- Name: categories_id_seq; Type: SEQUENCE; Schema: public; Owner: flask_stepik_3_usr
+--
+
+CREATE SEQUENCE public.categories_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.categories_id_seq OWNER TO flask_stepik_3_usr;
+
+--
+-- Name: categories_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: flask_stepik_3_usr
+--
+
+ALTER SEQUENCE public.categories_id_seq OWNED BY public.categories.id;
+
+
+--
+-- Name: dishes; Type: TABLE; Schema: public; Owner: flask_stepik_3_usr
+--
+
+CREATE TABLE public.dishes (
+    id integer NOT NULL,
+    title character varying NOT NULL,
+    price integer NOT NULL,
+    description text NOT NULL,
+    picture character varying,
+    category_id integer
+);
+
+
+ALTER TABLE public.dishes OWNER TO flask_stepik_3_usr;
+
+--
+-- Name: dishes_id_seq; Type: SEQUENCE; Schema: public; Owner: flask_stepik_3_usr
+--
+
+CREATE SEQUENCE public.dishes_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.dishes_id_seq OWNER TO flask_stepik_3_usr;
+
+--
+-- Name: dishes_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: flask_stepik_3_usr
+--
+
+ALTER SEQUENCE public.dishes_id_seq OWNED BY public.dishes.id;
+
+
+--
+-- Name: orders; Type: TABLE; Schema: public; Owner: flask_stepik_3_usr
+--
+
+CREATE TABLE public.orders (
+    id integer NOT NULL,
+    date timestamp without time zone,
+    total_sum integer,
+    status character varying,
+    email character varying(32) NOT NULL,
+    phone character varying,
+    address character varying,
+    user_id integer
+);
+
+
+ALTER TABLE public.orders OWNER TO flask_stepik_3_usr;
+
+--
+-- Name: orders_dishes; Type: TABLE; Schema: public; Owner: flask_stepik_3_usr
+--
+
+CREATE TABLE public.orders_dishes (
+    order_id integer,
+    dish_id integer
+);
+
+
+ALTER TABLE public.orders_dishes OWNER TO flask_stepik_3_usr;
+
+--
+-- Name: orders_id_seq; Type: SEQUENCE; Schema: public; Owner: flask_stepik_3_usr
+--
+
+CREATE SEQUENCE public.orders_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.orders_id_seq OWNER TO flask_stepik_3_usr;
+
+--
+-- Name: orders_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: flask_stepik_3_usr
+--
+
+ALTER SEQUENCE public.orders_id_seq OWNED BY public.orders.id;
+
+
+--
+-- Name: role; Type: TABLE; Schema: public; Owner: flask_stepik_3_usr
+--
+
+CREATE TABLE public.role (
+    id integer NOT NULL,
+    name character varying(80),
+    description character varying(255)
+);
+
+
+ALTER TABLE public.role OWNER TO flask_stepik_3_usr;
+
+--
+-- Name: role_id_seq; Type: SEQUENCE; Schema: public; Owner: flask_stepik_3_usr
+--
+
+CREATE SEQUENCE public.role_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.role_id_seq OWNER TO flask_stepik_3_usr;
+
+--
+-- Name: role_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: flask_stepik_3_usr
+--
+
+ALTER SEQUENCE public.role_id_seq OWNED BY public.role.id;
+
+
+--
+-- Name: roles_users; Type: TABLE; Schema: public; Owner: flask_stepik_3_usr
+--
+
+CREATE TABLE public.roles_users (
+    user_id integer,
+    role_id integer
+);
+
+
+ALTER TABLE public.roles_users OWNER TO flask_stepik_3_usr;
+
+--
+-- Name: users; Type: TABLE; Schema: public; Owner: flask_stepik_3_usr
+--
+
+CREATE TABLE public.users (
+    id integer NOT NULL,
+    email character varying(32) NOT NULL,
+    password_hash character varying(128) NOT NULL,
+    active boolean
+);
+
+
+ALTER TABLE public.users OWNER TO flask_stepik_3_usr;
+
+--
+-- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: flask_stepik_3_usr
+--
+
+CREATE SEQUENCE public.users_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.users_id_seq OWNER TO flask_stepik_3_usr;
+
+--
+-- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: flask_stepik_3_usr
+--
+
+ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
+
+
+--
+-- Name: categories id; Type: DEFAULT; Schema: public; Owner: flask_stepik_3_usr
+--
+
+ALTER TABLE ONLY public.categories ALTER COLUMN id SET DEFAULT nextval('public.categories_id_seq'::regclass);
+
+
+--
+-- Name: dishes id; Type: DEFAULT; Schema: public; Owner: flask_stepik_3_usr
+--
+
+ALTER TABLE ONLY public.dishes ALTER COLUMN id SET DEFAULT nextval('public.dishes_id_seq'::regclass);
+
+
+--
+-- Name: orders id; Type: DEFAULT; Schema: public; Owner: flask_stepik_3_usr
+--
+
+ALTER TABLE ONLY public.orders ALTER COLUMN id SET DEFAULT nextval('public.orders_id_seq'::regclass);
+
+
+--
+-- Name: role id; Type: DEFAULT; Schema: public; Owner: flask_stepik_3_usr
+--
+
+ALTER TABLE ONLY public.role ALTER COLUMN id SET DEFAULT nextval('public.role_id_seq'::regclass);
+
+
+--
+-- Name: users id; Type: DEFAULT; Schema: public; Owner: flask_stepik_3_usr
+--
+
+ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
+
+
+--
+-- Data for Name: alembic_version; Type: TABLE DATA; Schema: public; Owner: flask_stepik_3_usr
+--
+
+COPY public.alembic_version (version_num) FROM stdin;
+\.
+
+
+--
+-- Data for Name: categories; Type: TABLE DATA; Schema: public; Owner: flask_stepik_3_usr
+--
+
+COPY public.categories (id, title) FROM stdin;
+1	Суши
+2	Стритфуд
+3	Пицца
+4	Паста
+5	Новинки
+\.
+
+
+--
+-- Data for Name: categories_dishes; Type: TABLE DATA; Schema: public; Owner: flask_stepik_3_usr
+--
+
+COPY public.categories_dishes (category_id, dish_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: dishes; Type: TABLE DATA; Schema: public; Owner: flask_stepik_3_usr
+--
+
+COPY public.dishes (id, title, price, description, picture, category_id) FROM stdin;
+1	Ролл "Томато"	370	Лосось, снежный краб, вяленые томаты, авокадо, сыр, микс соусов, кунжут, 6 шт.	dish1.jpg	1
+2	Паста Карбонара	339	Бекон, Лук репчатый, Сливки, Спагетти, Сыр пармезан, Черный перец, Чеснок	dish2.jpeg	4
+3	Ролл "Трюфельный"	395	Лакедра, лосось, трюфельный сыр, авокадо, трюфельная паста, соус «Спайс», тобико, перец, кунжут, зеленый лук , 6 шт.	dish3.jpeg	1
+4	Шаверма с цыпленком	270	Капуста китайская, Куриная грудка, Лаваш армянский, Огурцы, Помидоры, Соус сливочный, Соус Черный перец	dish4.jpeg	2
+5	Паста Три мяса	329	Бекон, Курица, Лук репчатый, Свинина, Сливки, Спагетти, Сыр пармезан, Чеснок	dish5.jpeg	4
+6	Грин Карри	390	Курица, креветки, зеленый карри, кокосовое молоко, шампиньоны, брокколи, цукини	dish6.jpeg	5
+7	Ролл "Игай"	360	Лосось, мидии, огурец, перец гриль, зеленый лук, 6 шт.	dish7.jpeg	1
+8	Суши "Желтохвост спайс"	95	Спайси хамачи	dish8.jpeg	1
+9	Ролл "Курай"	360	Лосось, угорь, сыр, кунжут и острый соус, 6 шт.	dish9.jpeg	1
+10	Пицца Маргарита классическая	390	Базилик, Моцарелла, Помидоры, Томатный пицца-соус	dish10.jpeg	3
+11	Бургер Бродвей	312	Булочка с кунжутом белая, Говядина, Огурцы маринованные, Помидоры, Салат Айсберг, Соус барбекю, Соус сливочный, Сыр Чеддер	dish11.jpeg	2
+12	Паста с баклажанами	250	Спагетти, баклажаны, пармезан, перец чили, чеснок, томатный соус, специи, зелень, базилик.	dish12.jpeg	4
+13	Спагетти с морепродуктами, запечённые в пергаменте по-лигурийски	290	Спагетти, салатные мидии, филе кальмара, тигровые креветки, лук порей, помидоры черри, чеснок, базилик, соус песто, кедровые орешки, пармезан.	dish13.jpeg	4
+14	Пицца Карбонара классическая	499	Бекон, Моцарелла, Соус сливочный, Сыр пармезан	dish14.jpeg	3
+15	Пицца Барбекю классическая	480	Колбаски охотничьи, Курица, Моцарелла, Соус барбекю, Томатный пицца-соус, укроп	dish15.jpeg	3
+16	Паста с рагу из индейки и шпинатом	290	Спагетти, индейка, сливки, шампиньоны, лук репчатый, пармезан, шпинат, чеснок.	dish16.jpeg	4
+17	Буррито	289	Капуста китайская, Курица, Лук красный, Моцарелла, Перец болгарский, Помидоры, Рис, Соус мексиканский, Тортилья, Фасоль красная	dish17.jpeg	2
+18	Бургер Гранд Каньон	299	Булочка белая, Капуста китайская, Куриная грудка, Огурцы маринованные, Помидоры, Соус барбекю, Соус сливочный, Сыр Чеддер	dish18.jpeg	2
+19	Овощной салат с цыпленком	250	Куриное филе, огурцы , помидоры, полба, пармезан, соус Цезарь, зелень, кинза, базилик, яйцо.	dish19.jpeg	5
+20	Фреш-ролл с курицей	269	Капуста китайская, Курица, Огурцы, Помидоры, Соус Тар-тар, Сыр пармезан, Тортилья	dish20.jpeg	2
+21	Харчо	220	Говядина, лук репчатый, томатная паста, чеснок, рис, кинза, специи, зелень	dish21.jpeg	5
+22	Пицца Деревенская классическая	569	Бекон, Грибы шампиньоны, Лук красный, Моцарелла, Свинина, Томатный пицца-соус, укроп	dish22.jpeg	3
+23	Ролл Такаши	300	Угорь, огурец, чукка, рис, сливочный сыр, авокадо, кунжут, спайси соус, унаги соус.	dish23.jpeg	5
+24	Рис с овощами, свининой и шампиньонами с соусом удон	320	Рис, морковь, цукини, перец болгарский, китайская капуста, шампиньоны, свинина, кунжут, соус удон	dish24.jpeg	5
+25	Пицца Четыре сыра классическая	559	Моцарелла, Сливочный пицца-соус, Сыр Дор Блю, Сыр пармезан, Сыр Чеддер	dish25.jpeg	3
+\.
+
+
+--
+-- Data for Name: orders; Type: TABLE DATA; Schema: public; Owner: flask_stepik_3_usr
+--
+
+COPY public.orders (id, date, total_sum, status, email, phone, address, user_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: orders_dishes; Type: TABLE DATA; Schema: public; Owner: flask_stepik_3_usr
+--
+
+COPY public.orders_dishes (order_id, dish_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: role; Type: TABLE DATA; Schema: public; Owner: flask_stepik_3_usr
+--
+
+COPY public.role (id, name, description) FROM stdin;
+1	user	\N
+2	superuser	\N
+\.
+
+
+--
+-- Data for Name: roles_users; Type: TABLE DATA; Schema: public; Owner: flask_stepik_3_usr
+--
+
+COPY public.roles_users (user_id, role_id) FROM stdin;
+1	2
+1	1
+2	1
+3	1
+\.
+
+
+--
+-- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: flask_stepik_3_usr
+--
+
+COPY public.users (id, email, password_hash, active) FROM stdin;
+1	admin@ya.ru	pbkdf2:sha256:260000$FP8A1WX9R9xcrrST$28b58400feb4feadd1193748e8c9e453fc84bacb75831113f3f7cf89f4f5c796	t
+2	1@ya.ru	pbkdf2:sha256:260000$oKumGibR4PA88HGw$8ac3062adac4d40ea2e0d2260c22d6b9f83b5772614465f6a80751673e4b3c84	t
+3	2@ya.ru	pbkdf2:sha256:260000$TJTnWX5FiuEsU7Sb$0ca7c788de87f1962d41eaa76c56dc1839b05a1edf4fca432e138fe3ebf22fc5	t
+\.
+
+
+--
+-- Name: categories_id_seq; Type: SEQUENCE SET; Schema: public; Owner: flask_stepik_3_usr
+--
+
+SELECT pg_catalog.setval('public.categories_id_seq', 1, false);
+
+
+--
+-- Name: dishes_id_seq; Type: SEQUENCE SET; Schema: public; Owner: flask_stepik_3_usr
+--
+
+SELECT pg_catalog.setval('public.dishes_id_seq', 1, false);
+
+
+--
+-- Name: orders_id_seq; Type: SEQUENCE SET; Schema: public; Owner: flask_stepik_3_usr
+--
+
+SELECT pg_catalog.setval('public.orders_id_seq', 1, false);
+
+
+--
+-- Name: role_id_seq; Type: SEQUENCE SET; Schema: public; Owner: flask_stepik_3_usr
+--
+
+SELECT pg_catalog.setval('public.role_id_seq', 2, true);
+
+
+--
+-- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: flask_stepik_3_usr
+--
+
+SELECT pg_catalog.setval('public.users_id_seq', 3, true);
+
+
+--
+-- Name: alembic_version alembic_version_pkc; Type: CONSTRAINT; Schema: public; Owner: flask_stepik_3_usr
+--
+
+ALTER TABLE ONLY public.alembic_version
+    ADD CONSTRAINT alembic_version_pkc PRIMARY KEY (version_num);
+
+
+--
+-- Name: categories categories_pkey; Type: CONSTRAINT; Schema: public; Owner: flask_stepik_3_usr
+--
+
+ALTER TABLE ONLY public.categories
+    ADD CONSTRAINT categories_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: dishes dishes_pkey; Type: CONSTRAINT; Schema: public; Owner: flask_stepik_3_usr
+--
+
+ALTER TABLE ONLY public.dishes
+    ADD CONSTRAINT dishes_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: orders orders_pkey; Type: CONSTRAINT; Schema: public; Owner: flask_stepik_3_usr
+--
+
+ALTER TABLE ONLY public.orders
+    ADD CONSTRAINT orders_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: role role_name_key; Type: CONSTRAINT; Schema: public; Owner: flask_stepik_3_usr
+--
+
+ALTER TABLE ONLY public.role
+    ADD CONSTRAINT role_name_key UNIQUE (name);
+
+
+--
+-- Name: role role_pkey; Type: CONSTRAINT; Schema: public; Owner: flask_stepik_3_usr
+--
+
+ALTER TABLE ONLY public.role
+    ADD CONSTRAINT role_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: users users_email_key; Type: CONSTRAINT; Schema: public; Owner: flask_stepik_3_usr
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_email_key UNIQUE (email);
+
+
+--
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: flask_stepik_3_usr
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: categories_dishes categories_dishes_category_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: flask_stepik_3_usr
+--
+
+ALTER TABLE ONLY public.categories_dishes
+    ADD CONSTRAINT categories_dishes_category_id_fkey FOREIGN KEY (category_id) REFERENCES public.categories(id);
+
+
+--
+-- Name: categories_dishes categories_dishes_dish_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: flask_stepik_3_usr
+--
+
+ALTER TABLE ONLY public.categories_dishes
+    ADD CONSTRAINT categories_dishes_dish_id_fkey FOREIGN KEY (dish_id) REFERENCES public.dishes(id);
+
+
+--
+-- Name: dishes dishes_category_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: flask_stepik_3_usr
+--
+
+ALTER TABLE ONLY public.dishes
+    ADD CONSTRAINT dishes_category_id_fkey FOREIGN KEY (category_id) REFERENCES public.categories(id);
+
+
+--
+-- Name: orders_dishes orders_dishes_dish_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: flask_stepik_3_usr
+--
+
+ALTER TABLE ONLY public.orders_dishes
+    ADD CONSTRAINT orders_dishes_dish_id_fkey FOREIGN KEY (dish_id) REFERENCES public.dishes(id);
+
+
+--
+-- Name: orders_dishes orders_dishes_order_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: flask_stepik_3_usr
+--
+
+ALTER TABLE ONLY public.orders_dishes
+    ADD CONSTRAINT orders_dishes_order_id_fkey FOREIGN KEY (order_id) REFERENCES public.orders(id);
+
+
+--
+-- Name: orders orders_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: flask_stepik_3_usr
+--
+
+ALTER TABLE ONLY public.orders
+    ADD CONSTRAINT orders_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
+-- Name: roles_users roles_users_role_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: flask_stepik_3_usr
+--
+
+ALTER TABLE ONLY public.roles_users
+    ADD CONSTRAINT roles_users_role_id_fkey FOREIGN KEY (role_id) REFERENCES public.role(id);
+
+
+--
+-- Name: roles_users roles_users_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: flask_stepik_3_usr
+--
+
+ALTER TABLE ONLY public.roles_users
+    ADD CONSTRAINT roles_users_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
+-- PostgreSQL database dump complete
+--
+

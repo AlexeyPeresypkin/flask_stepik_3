@@ -1,10 +1,8 @@
-from werkzeug.security import generate_password_hash
-
 from app import app, user_datastore
 from app.models import db, Role
 
-with app.app_context():
-    db.create_all()
+
+def create_test_user():
     user_role = Role(name='user')
     super_user_role = Role(name='superuser')
     db.session.add(user_role)
@@ -17,3 +15,8 @@ with app.app_context():
     )
 
     db.session.commit()
+
+
+with app.app_context():
+    db.create_all()
+    # create_test_user()
